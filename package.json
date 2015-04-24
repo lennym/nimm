@@ -1,28 +1,27 @@
 {
-  "name": "npm-wrapper",
+  "name": "nimm",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "npm install missing modules",
+  "bin": {
+    "nimm": "./bin/nimm"
+  },
+  "preferGlobal": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lennym/npm-wrapper.git"
+    "url": "https://github.com/lennym/nimm.git"
   },
-  "author": "",
+  "author": "Lenny Martin <hello@lennym.co.uk>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lennym/npm-wrapper/issues"
+    "url": "https://github.com/lennym/nimm/issues"
   },
-  "homepage": "https://github.com/lennym/npm-wrapper",
+  "homepage": "https://github.com/lennym/nimm",
   "dependencies": {
     "colors": "^1.0.3",
-    "express": "^4.12.3",
     "read": "^1.0.5",
     "through": "^2.3.7"
-  },
-  "devDependencies": {
-    "express": "^4.12.3"
   }
 }
