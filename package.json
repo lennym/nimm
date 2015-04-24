@@ -1,0 +1,28 @@
+{
+  "name": "npm-wrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lennym/npm-wrapper.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lennym/npm-wrapper/issues"
+  },
+  "homepage": "https://github.com/lennym/npm-wrapper",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "express": "^4.12.3",
+    "read": "^1.0.5",
+    "through": "^2.3.7"
+  },
+  "devDependencies": {
+    "express": "^4.12.3"
+  }
+}

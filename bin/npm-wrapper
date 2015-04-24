@@ -1,0 +1,96 @@
+#! /usr/bin/env node
+
+require('colors');
+
+var cp = require('child_process'),
+    through = require('through');
+
+var args = process.argv.slice(2),
+    mod = args.shift();
+
+if (!mod) {
+    throw new Error('entry point must be defined');
+}
+
+function start() {
+    var missingModule;
+    console.log('Executing:'.green + ' node', mod, args.join(' '));
+    var proc = cp.fork(mod, args, {
+        silent: true
+    });
+    proc.stderr.pipe(through(function (d) {
+        var match = d.toString().match(/Error: Cannot find module '(.+)'/);
+        if (match && isNpmModule(match[1])) {
+            missingModule = match[1];
+        }
+        this.queue(d);
+    })).pipe(process.stderr);
+    proc.stdout.pipe(process.stdout);
+
+    proc.on('exit', function (code) {
+        if (code !== 0 && missingModule) {
+            read(missingModule, code);
+        } else {
+            process.exit(code);
+        }
+    });
+}
+
+function isNpmModule(m) {
+    return ['.', '/'].indexOf(m.substr(0,1)) === -1;
+}
+
+function read(m, code) {
+    var allowed = ['y', 'n', 's', 'd'];
+    console.log('\nModule', m.blue, 'is not installed');
+    var prompt = 'Install ' + m.blue + '? (y,s,d,n)';
+    require('read')({
+        prompt: prompt
+    }, function (err, input) {
+        if (err) {
+            process.exit(code);
+        }
+
+        if (allowed.indexOf(input) === -1) {
+            usage(m);
+            read(m, code);
+        } else if (input === 'n') {
+            process.exit(code);
+        } else {
+            install(m, input);
+        }
+    });
+}
+
+function usage(m) {
+    console.log([
+        '',
+        'Available options:'.red,
+        'y:'.blue + '   Install ' + m + ' without saving to package.json',
+        's:'.blue + '   Install ' + m + ' and save to dependencies',
+        'd:'.blue + '   Install ' + m + ' and save to dependencies',
+        'n:'.blue + '   Do not install ' + m
+    ].join('\n'));
+}
+
+function install(m, flag) {
+    var args = ['install', m];
+    if (flag === 's') {
+        args.push('--save');
+    } else if (flag === 'd') {
+        args.push('--save-dev');
+    }
+    console.log('Executing:'.green + ' npm', args.join(' '));
+    cp.spawn('npm', args)
+        .on('exit', function (code) {
+            if (code === 0) {
+                console.log('Installation complete. Restarting...');
+                start();
+            } else {
+                console.log('Installation failed. Exiting...');
+                process.exit(code);
+            }
+        });
+}
+
+start();
